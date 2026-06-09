@@ -4,14 +4,20 @@ import (
 	"kyrie/controllers/ejaculatories"
 	"kyrie/controllers/quotes"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
 
 func main() {
-	e := echo.New()
-	e.Use(middleware.RequestLogger())
+	en := echo.New()
+	en.Use(middleware.RequestLogger())
+	en.Use(middleware.ContextTimeout(60 * time.Second))
+	en.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20.0)))
+	en.Pre(middleware.RemoveTrailingSlash())
+
+	e := en.Group("/api")
 
 	// quotes
 	quotesController, err := quotes.NewQuotesController("./data/quotes.json")
@@ -40,7 +46,7 @@ func main() {
 		return c.String(http.StatusOK, "pong")
 	})
 
-	if err := e.Start(":1323"); err != nil {
-		e.Logger.Error("failed to start server", "error", err)
+	if err := en.Start(":1323"); err != nil {
+		en.Logger.Error("failed to start server", "error", err)
 	}
 }
