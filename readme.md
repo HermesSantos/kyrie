@@ -1,8 +1,8 @@
 # Kyrie
+API HTTP em Go com frases e jaculatórias católicas.
 
 ![Kyrie](assets/kyrie.png)
 
-API HTTP em Go com frases e jaculatórias católicas.
 
 ## Como executar
 
